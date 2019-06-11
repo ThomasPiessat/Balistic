@@ -6,15 +6,21 @@ using Utilities;
 
 public class CanonShootAnticipate : MonoBehaviour
 {
-    [SerializeField] private GameObject m_caster;
-    [SerializeField] private TargetMoving m_target;
+    [SerializeField] private GameObject m_caster = null;
+    [SerializeField] private TargetMoving m_target = null;
 
-    [SerializeField] private Slider m_angleSlider;
-    [SerializeField] private Slider m_strengthSlider;
-    [SerializeField] private Text m_angleTxt;
-    [SerializeField] private Text m_strengthTxt;
+    [SerializeField] private Slider m_angleSlider = null;
+    [SerializeField] private Slider m_strengthSlider = null;
+    [SerializeField] private Text m_angleTxt = null;
+    [SerializeField] private Text m_strengthTxt = null;
+    [SerializeField] private float m_magnitude = 10f;
 
-    [SerializeField] private float m_time;
+    [SerializeField] private float m_time = 0f;
+
+    [SerializeField] private LineRenderer m_lineRenderer = null;
+
+    [SerializeField] float m_timeDebug = 5f;
+    [SerializeField] [Range(0.01f, 10)] float m_precisionDebug = 0.2f;
 
     private float m_strength = 10f;
     private const float m_gravity = 9.81f;
@@ -23,21 +29,22 @@ public class CanonShootAnticipate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_angleSlider.maxValue = 90;
-        m_strengthSlider.maxValue = 100;
+        //m_angleSlider.maxValue = 90;
+        //m_strengthSlider.maxValue = 100;
         rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        m_strengthTxt.text = "Strength = " + m_strengthSlider.value.ToString();
-        m_angleTxt.text = "Angle = " + m_angleSlider.value.ToString();
+        //m_strengthTxt.text = "Strength = " + m_strengthSlider.value.ToString();
+        //m_angleTxt.text = "Angle = " + m_angleSlider.value.ToString();
         if (Input.GetKeyDown(KeyCode.A))
         {
             rb.AddForce(Anticipate(), ForceMode.Impulse);
         }
 
+        Predicate();
     }
 
     List<float> CalculAngle()
@@ -96,5 +103,22 @@ public class CanonShootAnticipate : MonoBehaviour
         m_strength = Vo.magnitude;
 
         return Vo;
+    }
+
+    private void Predicate()
+    {
+        if (m_lineRenderer == null)
+            return;
+
+        List<Vector3> pos = new List<Vector3>();
+        for (float i = 0; i < m_timeDebug; i += m_precisionDebug)
+        {
+            Vector3 vector3 = Tool.GetPredictionPositionWithGravity(transform.position, transform.forward * m_magnitude, i);
+            pos.Add(vector3);
+        }
+
+        m_lineRenderer.positionCount = pos.Count;
+        m_lineRenderer.SetPositions(pos.ToArray());
+
     }
 }

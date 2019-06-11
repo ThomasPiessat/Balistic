@@ -79,7 +79,24 @@ public static class Tool
         return list;
     }
 
+    public static Vector3 GetPredictionPositionWithGravity(Vector3 _beginPosition, Vector3 _velocity, float _time)
+    {
+        Vector3 gravity = Physics.gravity;
 
+        return _beginPosition + (_velocity * _time) + (gravity * _time * _time / 2);
+    }
+
+    public static Vector3 GetPredictionPositionWithoutGravity(Vector3 _beginPosition, Vector3 _velocity, float _time)
+    {
+        return _beginPosition + (_velocity * _time);
+    }
+
+    public static Vector3 GetPredictionVelocity(Vector3 _initialVelocity, float _time)
+    {
+        Vector3 gravity = Physics.gravity;
+
+        return _initialVelocity + gravity * _time;
+    }
 
 
 }
