@@ -98,5 +98,18 @@ public static class Tool
         return _initialVelocity + gravity * _time;
     }
 
+    public static Vector3 GetVelocityWithTime(Vector3 _beginPosition, Vector3 _targetPosition, float _time)
+    {
+        Vector3 velocity = new Vector3();
+
+        if (_time <= 0)
+            return velocity;
+
+        float g = Physics.gravity.y;
+        velocity.x = (_targetPosition.x - _beginPosition.x) / _time;
+        velocity.z = (_targetPosition.z - _beginPosition.z) / _time;
+        velocity.y = (_targetPosition.y - _beginPosition.y - (g * _time * _time / 2)) / _time;
+        return velocity;
+    }
 
 }

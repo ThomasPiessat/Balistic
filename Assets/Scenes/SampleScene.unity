@@ -413,6 +413,12 @@ PrefabInstance:
       propertyPath: m_cursor
       value: 
       objectReference: {fileID: 1248683079}
+    - target: {fileID: 2420254643088615828, guid: 4e41d03891814f34cb23b2b6d2a0dc2c,
+        type: 3}
+      propertyPath: m_projectile
+      value: 
+      objectReference: {fileID: 54424073529235782, guid: c7b8270395dc505429de103674b08d87,
+        type: 3}
     - target: {fileID: 2420254641913225371, guid: 4e41d03891814f34cb23b2b6d2a0dc2c,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -1325,10 +1331,15 @@ MonoBehaviour:
   m_angleTxt: {fileID: 0}
   m_strengthTxt: {fileID: 0}
   m_magnitude: 10
-  m_time: 0
+  m_time: 10
+  m_actualTime: 0
+  m_isPredicate: 1
   m_lineRenderer: {fileID: 1933434041}
   m_timeDebug: 5
   m_precisionDebug: 0.2
+  m_prefabProjectile: {fileID: 54424073529235782, guid: c7b8270395dc505429de103674b08d87,
+    type: 3}
+  m_listPos: []
 --- !u!1 &1963502836
 GameObject:
   m_ObjectHideFlags: 0

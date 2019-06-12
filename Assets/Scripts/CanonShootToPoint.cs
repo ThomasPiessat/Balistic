@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CanonShootToPoint : MonoBehaviour
 {
-    [SerializeField] private Rigidbody m_prefab;
+    [SerializeField] private Rigidbody m_projectile;
     [SerializeField] private GameObject m_cursor;
     [SerializeField] private LayerMask m_layer;
     [SerializeField] private GameObject m_caster;
@@ -45,7 +45,7 @@ public class CanonShootToPoint : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
-                Rigidbody rb = Instantiate(m_prefab, m_caster.transform.position, Quaternion.identity);
+                Rigidbody rb = Instantiate(m_projectile, m_caster.transform.position, Quaternion.identity);
                 rb.velocity = Vo;
             }
         }

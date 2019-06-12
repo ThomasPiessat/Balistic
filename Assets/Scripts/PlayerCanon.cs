@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Canon : MonoBehaviour
+public class PlayerCanon : MonoBehaviour
 {
     [SerializeField] private Rigidbody m_prefab;
     [SerializeField] private GameObject m_target;

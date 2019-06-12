@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utilities;
 
-public class CanonShootAnticipate : MonoBehaviour
+public class AICanon : MonoBehaviour
 {
     [SerializeField] private GameObject m_caster = null;
     [SerializeField] private TargetMoving m_target = null;
@@ -16,36 +16,46 @@ public class CanonShootAnticipate : MonoBehaviour
     [SerializeField] private float m_magnitude = 10f;
 
     [SerializeField] private float m_time = 0f;
+    [SerializeField] private float m_actualTime = 0f;
+
+    [SerializeField] private bool m_isPredicate = false;
 
     [SerializeField] private LineRenderer m_lineRenderer = null;
 
     [SerializeField] float m_timeDebug = 5f;
     [SerializeField] [Range(0.01f, 10)] float m_precisionDebug = 0.2f;
 
+    [SerializeField] private Rigidbody m_prefabProjectile = null;
+
+    [SerializeField] private List<Vector3> m_listPos = new List<Vector3>();
+
     private float m_strength = 10f;
     private const float m_gravity = 9.81f;
-    Rigidbody rb;
+
+    #region MONOBEHAVIOUR METHODS
 
     // Start is called before the first frame update
     void Start()
     {
-        //m_angleSlider.maxValue = 90;
-        //m_strengthSlider.maxValue = 100;
-        rb = GetComponent<Rigidbody>();
+        if (m_target == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < 30; i++)
+        {
+            m_listPos.Add(m_target.transform.position);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //m_strengthTxt.text = "Strength = " + m_strengthSlider.value.ToString();
-        //m_angleTxt.text = "Angle = " + m_angleSlider.value.ToString();
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            rb.AddForce(Anticipate(), ForceMode.Impulse);
-        }
-
-        Predicate();
+        UpdateTargetPosition();
+        ShootWithTime();
     }
+
+    #endregion
 
     List<float> CalculAngle()
     {
@@ -84,6 +94,22 @@ public class CanonShootAnticipate : MonoBehaviour
 
     }
 
+    #region PRIVATE METHODS
+
+    void UpdateTargetPosition()
+    {
+        if (m_target.transform)
+        {
+            for (int i = 0; i < m_listPos.Count - 1; i++)
+            {
+                m_listPos[i] = m_listPos[i + 1];
+            }
+
+            m_listPos[m_listPos.Count - 1] = m_target.transform.position;
+        }
+    }
+
+
     private Vector3 Anticipate()
     {
         //divide detlaTime to get m/s
@@ -105,20 +131,59 @@ public class CanonShootAnticipate : MonoBehaviour
         return Vo;
     }
 
-    private void Predicate()
+    private Vector3 Predicate(float _time)
     {
         if (m_lineRenderer == null)
-            return;
+            return new Vector3();
 
-        List<Vector3> pos = new List<Vector3>();
-        for (float i = 0; i < m_timeDebug; i += m_precisionDebug)
-        {
-            Vector3 vector3 = Tool.GetPredictionPositionWithGravity(transform.position, transform.forward * m_magnitude, i);
-            pos.Add(vector3);
-        }
+        if (m_target == null)
+            return new Vector3();
 
-        m_lineRenderer.positionCount = pos.Count;
-        m_lineRenderer.SetPositions(pos.ToArray());
+        Vector3 velocity = (m_listPos[0] - m_listPos[m_listPos.Count - 1]) / (Time.fixedDeltaTime * m_listPos.Count - 1);
+
+        m_lineRenderer.positionCount = 2;
+
+        Vector3 pos1 = m_listPos[1] + Vector3.up;
+        Vector3 pos2 = m_listPos[1] + velocity * _time + Vector3.up;
+
+        m_lineRenderer.SetPosition(0, pos1);
+        m_lineRenderer.SetPosition(1, pos2);
+
+        return m_target.transform.position + velocity * _time + Vector3.up;
 
     }
+
+    private void ShootWithTime()
+    {
+        if (m_prefabProjectile == null || m_target.transform == null)
+        {
+            return;
+        }
+
+        Vector3 positionToShoot = new Vector3();
+
+        if (m_isPredicate)
+        {
+            positionToShoot = Predicate(m_time);
+        }
+        else
+        {
+            positionToShoot = m_target.transform.position;
+        }
+
+        Vector3 velocity = Tool.GetVelocityWithTime(transform.position, Predicate(m_time), m_time);
+
+        Spawn(velocity);
+    }
+
+    private void Spawn(Vector3 _velocity)
+    {
+        transform.forward = _velocity.normalized;
+        m_actualTime = 0;
+        Rigidbody projectile =
+            Instantiate<Rigidbody>(m_prefabProjectile, m_caster.transform.position, m_caster.transform.rotation);
+        projectile.velocity = _velocity;
+    }
+
+    #endregion
 }
