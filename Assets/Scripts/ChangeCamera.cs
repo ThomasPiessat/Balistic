@@ -31,7 +31,7 @@ public class ChangeCamera : MonoBehaviour
 
     private void SwitchCameras(int _keyNum)
     {
-        for (int i = 0; i < m_listCameras.Count - 1; i++)
+        for (int i = 0; i < m_listCameras.Count; i++)
         {
             if (m_listCameras[i] != null && _keyNum != i)
             {
