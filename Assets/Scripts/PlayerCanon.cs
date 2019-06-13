@@ -25,6 +25,7 @@ public class PlayerCanon : MonoBehaviour
 
     private void Start()
     {
+        Cursor.visible = true; 
         targetTransform = m_target.transform;
         targetRigidbody = m_target.GetComponent<Rigidbody>();
 
